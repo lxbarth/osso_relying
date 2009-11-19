@@ -175,7 +175,7 @@ function openidrp_profile_tasks(&$task, $url) {
 function openidrp_form_alter(&$form, $form_state, $form_id) {
   if ($form_id == 'install_configure') {
     // Set default for site name field.
-    $form['site_information']['site_name']['#default_value'] = 'OpenID Provider';
+    $form['site_information']['site_name']['#default_value'] = 'OpenID Relying Party';
     $form['site_information']['site_mail']['#default_value'] = 'admin@'. $_SERVER['HTTP_HOST'];
     $form['admin_account']['account']['name']['#default_value'] = 'admin';
     $form['admin_account']['account']['mail']['#default_value'] = 'admin@'. $_SERVER['HTTP_HOST'];
