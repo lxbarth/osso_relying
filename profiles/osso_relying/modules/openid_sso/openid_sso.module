@@ -18,9 +18,17 @@ function openid_sso_strongarm() {
  */
 function openid_sso_menu_alter(&$items) {
   // Disable user registration page to suppress direct registration.
-  unset($items['user/register']);
+  $items['user/register']['page callback'] = 'openid_sso_register_page';
   // Override the user page callback to replace it with our own login form.
   $items['user']['page callback'] = 'openid_sso_user_page';
+}
+
+/**
+ * Custom callback for user/register/
+ */
+function openid_sso_register_page() {
+  $provider = variable_get('openid_sso_provider', '');
+  drupal_goto($provider['url'], 'q=user/register&relying_party='. variable_get('site_name', 'Drupal'));
 }
 
 /**
