@@ -65,14 +65,17 @@ function openid_sso_login_form() {
   $form = array();
   if (!empty($_GET['identifier'])) {
     drupal_add_js(drupal_get_path('module', 'openid_sso') .'/openid_sso.js');
-    $form['message']['#value'] = '<h3>'. t('Automatic login. If page does not redirect within 3 seconds, click "Log in" button below.') .'</h3>';
+    $form['message']['#value'] = '<h3>'. t('Hello @name &ndash; you are being logged in automatically', array('@name' => $_GET['identifier'])) .'</h3>';
+    $form['message']['#value'] .= '<p>'. t('If page does not redirect within 3 seconds, click "Log in" button below.') .'</p>';
   }
   $form['openid_identifier'] = array(
     '#type' => 'textfield',
     '#title'=> t('Your !provider user name', array('!provider' => $provider['name'])),
     '#default_value' => check_plain(urldecode($_GET['identifier'])),
     '#maxlength' => 255,
-    '#attributes' => empty($_GET['identifier']) ? NULL : array('style' => 'display:none'),
+    // Use prefix/suffix instead of #attributes as we'd like to hide the label, too.
+    '#prefix' => empty($_GET['identifier']) ? NULL : '<div style="display:none">',
+    '#suffix' => empty($_GET['identifier']) ? NULL : '</div>',
   );
   $form['#validate'] = array('openid_sso_login_form_validate');
   $form['openid.return_to'] = array('#type' => 'hidden', '#value' => url('openid/authenticate', array('absolute' => TRUE, 'query' => drupal_get_destination())));
