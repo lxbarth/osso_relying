@@ -31,8 +31,8 @@ function osso_relying_profile_modules() {
  */
 function osso_relying_profile_details() {
   return array(
-    'name' => 'OpenID Relying Party',
-    'description' => 'Sets up a simple Drupal site with OpenID Relying Party support.'
+    'name' => 'OpenID Simple Sign-On Relying Party',
+    'description' => 'Sets up Drupal with OpenID Simple Sign-On support.'
   );
 }
 
