@@ -18,9 +18,14 @@ largely simplified sign on experience for webs of trusted sites. Hence the name
 Installation
 ============
 
-Install this module and dependencies. In your site's settings.php file, define a
-trusted OpenID Provider. OpenID Provider must have OpenID Provider SSO enabled.
+Install this module and dependencies.
 
-$conf['openid_sso_provider'] = array(
-  'http://localhost/op/'
-);
+In your site's settings.php file, define a trusted OpenID Provider. OpenID
+Provider must have OpenID Provider SSO enabled.
+
+$conf['openid_sso_provider'] = 'http://localhost/op/';
+
+Also define the name of your trusted web. This will help users to identify this
+site as the member of web of trusted sites.
+
+$conf['openid_sso_realm_name'] = 'SSO Web';

@@ -1,2 +1,74 @@
 <?php
 
+/**
+ * Implementation of hook_strongarm().
+ */
+function openid_sso_strongarm() {
+  return array (
+    // No email verification as users can only sign in from trusted provider.
+    'user_email_verification' => 0,
+    // We must allow user registration otherwise OpenID will refuse to register
+    // user. We will suppress user/register in hook_menu_alter().
+    'user_register' => '1',
+  );
+}
+
+/**
+ * Implementation of hook_menu_alter().
+ */
+function openid_sso_menu_alter(&$items) {
+  // Disable user registration page to suppress direct registration.
+  unset($items['user/register']);
+  // Override the user page callback to replace it with our own login form.
+  $items['user']['page callback'] = 'openid_sso_user_page';
+}
+
+/**
+ * Custom menu callback for user/ page.
+ */
+function openid_sso_user_page() {
+
+  // If user is logged in, just pass on to original user page.
+  global $user;
+  if ($user->uid) {
+    return user_page();
+  }
+
+  // If there is no user logged in, present a simplified login form.
+  return drupal_get_form('openid_sso_login_form');
+}
+
+/**
+ * Simplified login form.
+ *
+ * Compare to openid_form_alter().
+ *
+ * @todo: Smoothen out user name retrieval, will require adjustments to
+ * provider.
+ * '#description' => l(t('Forgot your user name?'), trim(variable_get('openid_sso_provider', ''), '/') .'/user/password'),
+ */
+function openid_sso_login_form() {
+  $form = array();
+  $form['openid_identifier'] = array(
+    '#type' => 'textfield',
+    '#title'=> t('Your !realm user name', array('!realm' => variable_get('openid_sso_realm_name', 'SSO Web'))),
+    '#maxlength' => 255,
+  );
+  $form['#validate'] = array('openid_sso_login_form_validate');
+  $form['openid.return_to'] = array('#type' => 'hidden', '#value' => url('openid/authenticate', array('absolute' => TRUE, 'query' => drupal_get_destination())));
+  return $form;
+}
+
+/**
+ * Submit hook for openid_sso_login_form().
+ *
+ * Compare to openid_login_validate().
+ */
+function openid_sso_login_form_validate($form, &$form_state) {
+  $return_to = $form_state['values']['openid.return_to'];
+  if (empty($return_to)) {
+    $return_to = url('', array('absolute' => TRUE));
+  }
+
+  openid_begin(trim(variable_get('openid_sso_provider', ''), '/') .'/openid/'. urlencode($form_state['values']['openid_identifier']), $return_to, $form_state['values']);
+}
