@@ -56,10 +56,11 @@ function openid_sso_user_page() {
  * '#description' => l(t('Forgot your user name?'), trim(variable_get('openid_sso_provider', ''), '/') .'/user/password'),
  */
 function openid_sso_login_form() {
+  $provider = variable_get('openid_sso_provider', 'SSO Web');
   $form = array();
   $form['openid_identifier'] = array(
     '#type' => 'textfield',
-    '#title'=> t('Your !realm user name', array('!realm' => variable_get('openid_sso_realm_name', 'SSO Web'))),
+    '#title'=> t('Your !provider user name', array('!provider' => $provider['name'])),
     '#maxlength' => 255,
   );
   $form['#validate'] = array('openid_sso_login_form_validate');
