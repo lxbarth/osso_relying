@@ -17,6 +17,7 @@ function osso_relying_profile_modules() {
     'dblog',
     'openid',
     'openid_sso',
+    'osso_relying',
     'strongarm',
   );
 }
