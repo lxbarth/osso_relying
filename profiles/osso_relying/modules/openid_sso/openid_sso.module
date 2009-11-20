@@ -55,10 +55,6 @@ function openid_sso_user_page() {
  * Simplified login form.
  *
  * Compare to openid_form_alter().
- *
- * @todo: Smoothen out user name retrieval, will require adjustments to
- * provider.
- * '#description' => l(t('Forgot your user name?'), trim(variable_get('openid_sso_provider', ''), '/') .'/user/password'),
  */
 function openid_sso_login_form() {
   $provider = variable_get('openid_sso_provider', 'SSO Web');
