@@ -103,7 +103,6 @@ function openid_sso_login_form_validate($form, &$form_state) {
  * a registration.
  */
 function _openid_sso_provider_query() {
-  $redirect = urlencode(url('user', array('absolute' => TRUE)));
-  $name = urlencode(variable_get('site_name', 'Drupal'));
-  return "q=user/register&redirect=$redirect&relying_party_name=$name";
+  $relying_party = urlencode(url('', array('absolute' => TRUE)));
+  return "q=user/register&relying_party=$relying_party&redirect=user";
 }
