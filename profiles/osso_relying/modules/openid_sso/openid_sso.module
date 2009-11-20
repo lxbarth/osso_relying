@@ -1,6 +1,11 @@
 <?php
 
 /**
+ * @file
+ * Hook implementations, callbacks form OpenID SSO.
+ */
+
+/**
  * Implementation of hook_strongarm().
  */
 function openid_sso_strongarm() {
@@ -58,11 +63,16 @@ function openid_sso_user_page() {
 function openid_sso_login_form() {
   $provider = variable_get('openid_sso_provider', 'SSO Web');
   $form = array();
+  if (!empty($_GET['identifier'])) {
+    drupal_add_js(drupal_get_path('module', 'openid_sso') .'/openid_sso.js');
+    $form['message']['#value'] = '<h3>'. t('Automatic login. If page does not redirect within 3 seconds, click "Log in" button below.') .'</h3>';
+  }
   $form['openid_identifier'] = array(
     '#type' => 'textfield',
     '#title'=> t('Your !provider user name', array('!provider' => $provider['name'])),
-    '#default_value' => check_plain($_GET['identifier']),
+    '#default_value' => check_plain(urldecode($_GET['identifier'])),
     '#maxlength' => 255,
+    '#attributes' => empty($_GET['identifier']) ? NULL : array('style' => 'display:none'),
   );
   $form['#validate'] = array('openid_sso_login_form_validate');
   $form['openid.return_to'] = array('#type' => 'hidden', '#value' => url('openid/authenticate', array('absolute' => TRUE, 'query' => drupal_get_destination())));
