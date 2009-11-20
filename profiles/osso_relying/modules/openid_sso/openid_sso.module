@@ -54,7 +54,7 @@ function openid_sso_user_page() {
 function openid_sso_register_redirect() {
   $provider = variable_get('openid_sso_provider', '');
   $relying_party = urlencode(url('', array('absolute' => TRUE)));
-  drupal_goto($provider['url'], "q=user/register&relying_party=$relying_party&redirect=user");
+  drupal_goto($provider['url'], "q=user/register&relying_party=$relying_party");
 }
 
 /**
@@ -103,13 +103,4 @@ function openid_sso_login_form_validate($form, &$form_state) {
   }
   $provider = variable_get('openid_sso_provider', '');
   openid_begin($provider['url'] .'/openid/'. urlencode($form_state['values']['openid_identifier']), $return_to, $form_state['values']);
-}
-
-/**
- * Helper function, define HTTP query to pass on to the provider when requesting
- * a registration.
- */
-function _openid_sso_provider_query() {
-  $relying_party = urlencode(url('', array('absolute' => TRUE)));
-  return "q=user/register&relying_party=$relying_party&redirect=user";
 }
