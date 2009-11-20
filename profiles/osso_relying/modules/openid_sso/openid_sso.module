@@ -29,6 +29,21 @@ function openid_sso_menu_alter(&$items) {
 }
 
 /**
+ * Custom menu callback for user/ page.
+ */
+function openid_sso_user_page() {
+
+  // If user is logged in, just pass on to original user page.
+  global $user;
+  if ($user->uid) {
+    return user_page();
+  }
+
+  // If there is no user logged in, present a simplified login form.
+  return drupal_get_form('openid_sso_login_form');
+}
+
+/**
  * Custom callback for user/register/
  */
 function openid_sso_register_page() {
