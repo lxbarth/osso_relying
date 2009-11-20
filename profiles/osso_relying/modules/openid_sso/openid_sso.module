@@ -33,7 +33,7 @@ function openid_sso_menu_alter(&$items) {
  */
 function openid_sso_register_page() {
   $provider = variable_get('openid_sso_provider', '');
-  drupal_goto($provider['url'], 'q=user/register&relying_party='. variable_get('site_name', 'Drupal'));
+  drupal_goto($provider['url'], _openid_sso_provider_query());
 }
 
 /**
@@ -68,7 +68,7 @@ function openid_sso_login_form() {
   $form['openid_identifier'] = array(
     '#type' => 'textfield',
     '#title'=> t('Your !provider user name', array('!provider' => $provider['name'])),
-    '#description' => l(t('New? Get an account on !provider', array('!provider' => $provider['name'])), $provider['url'], array('query' => 'q=user/register&relying_party='. variable_get('site_name', 'Drupal'))),
+    '#description' => l(t('New? Get an account on !provider', array('!provider' => $provider['name'])), $provider['url'], array('query' => _openid_sso_provider_query())),
     '#default_value' => check_plain(urldecode($_GET['identifier'])),
     '#maxlength' => 255,
     // Use prefix/suffix instead of #attributes as we'd like to hide the label, too.
@@ -96,4 +96,14 @@ function openid_sso_login_form_validate($form, &$form_state) {
   }
   $provider = variable_get('openid_sso_provider', '');
   openid_begin($provider['url'] .'/openid/'. urlencode($form_state['values']['openid_identifier']), $return_to, $form_state['values']);
+}
+
+/**
+ * Helper function, define HTTP query to pass on to the provider when requesting
+ * a registration.
+ */
+function _openid_sso_provider_query() {
+  $redirect = urlencode(url('user', array('absolute' => TRUE)));
+  $name = urlencode(variable_get('site_name', 'Drupal'));
+  return "q=user/register&redirect=$redirect&relying_party_name=$name";
 }
