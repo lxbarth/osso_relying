@@ -56,6 +56,10 @@ function openid_sso_login_form() {
   );
   $form['#validate'] = array('openid_sso_login_form_validate');
   $form['openid.return_to'] = array('#type' => 'hidden', '#value' => url('openid/authenticate', array('absolute' => TRUE, 'query' => drupal_get_destination())));
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Log in'),
+  );
   return $form;
 }
 
