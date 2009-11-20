@@ -67,6 +67,7 @@ function openid_sso_login_form() {
     drupal_add_js(drupal_get_path('module', 'openid_sso') .'/openid_sso.js');
     $form['message']['#value'] = '<h3>'. t('Hello @name &ndash; you are being logged in automatically', array('@name' => $_GET['identifier'])) .'</h3>';
     $form['message']['#value'] .= '<p>'. t('If page does not redirect within 3 seconds, click "Log in" button below.') .'</p>';
+    $form['#attributes'] = array('class' => 'auto-submit');
   }
   $form['openid_identifier'] = array(
     '#type' => 'textfield',
