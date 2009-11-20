@@ -31,8 +31,8 @@ function osso_relying_profile_modules() {
  */
 function osso_relying_profile_details() {
   return array(
-    'name' => 'OpenID Simple Sign-On Relying Party',
-    'description' => 'Sets up Drupal with OpenID Simple Sign-On support.'
+    'name' => 'The Oranges Blog',
+    'description' => 'Demo: Drupal as relying party for OpenID Simple Sign-On.',
   );
 }
 
@@ -193,7 +193,7 @@ function osso_relying_profile_tasks(&$task, $url) {
 function osso_relying_form_alter(&$form, $form_state, $form_id) {
   if ($form_id == 'install_configure') {
     // Set default for site name field.
-    $form['site_information']['site_name']['#default_value'] = 'OpenID Relying Party';
+    $form['site_information']['site_name']['#default_value'] = 'The Oranges Blog';
     $form['site_information']['site_mail']['#default_value'] = 'admin@'. $_SERVER['HTTP_HOST'];
     $form['admin_account']['account']['name']['#default_value'] = 'admin';
     $form['admin_account']['account']['mail']['#default_value'] = 'admin@'. $_SERVER['HTTP_HOST'];
