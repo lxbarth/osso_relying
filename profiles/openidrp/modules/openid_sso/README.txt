@@ -23,9 +23,9 @@ Install this module and dependencies.
 In your site's settings.php file, define a trusted OpenID Provider. OpenID
 Provider must have OpenID Provider SSO enabled.
 
-$conf['openid_sso_provider'] = 'http://localhost/op/';
+$conf['openid_sso_provider'] = array(
+  'url' => 'http://localhost/op', // No trailing slashes.
+  'name' => 'SSO Web', // Mostly always the Provider's site name.
+);
 
-Also define the name of your trusted web. This will help users to identify this
-site as the member of web of trusted sites.
 
-$conf['openid_sso_realm_name'] = 'SSO Web';

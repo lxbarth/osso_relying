@@ -73,6 +73,6 @@ function openid_sso_login_form_validate($form, &$form_state) {
   if (empty($return_to)) {
     $return_to = url('', array('absolute' => TRUE));
   }
-
-  openid_begin(trim(variable_get('openid_sso_provider', ''), '/') .'/openid/'. urlencode($form_state['values']['openid_identifier']), $return_to, $form_state['values']);
+  $provider = variable_get('openid_sso_provider', '');
+  openid_begin($provider['url'] .'/openid/'. urlencode($form_state['values']['openid_identifier']), $return_to, $form_state['values']);
 }
