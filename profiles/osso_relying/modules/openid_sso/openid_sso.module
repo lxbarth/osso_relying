@@ -54,6 +54,9 @@ function openid_sso_user_page() {
 /**
  * Simplified login form.
  *
+ * Offer simple text field for user name. On submit, tack user name to the end
+ * of OpenID Provider URL and redirect to begin athentication handshake.
+ *
  * Compare to openid_form_alter().
  */
 function openid_sso_login_form() {
