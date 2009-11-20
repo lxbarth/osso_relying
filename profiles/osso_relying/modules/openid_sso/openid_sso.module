@@ -6,6 +6,19 @@
  */
 
 /**
+ * Implementation of hook_menu().
+ */
+function openid_sso_menu() {
+  $items = array();
+  $items['sso'] = array(
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('openid_sso_login_form'),
+    'access callback' => 'openid_sso_login_access',
+  );
+  return $items;
+}
+
+/**
  * Implementation of hook_strongarm().
  */
 function openid_sso_strongarm() {
@@ -19,36 +32,14 @@ function openid_sso_strongarm() {
 }
 
 /**
- * Implementation of hook_menu_alter().
+ * Access callback for login page.
  */
-function openid_sso_menu_alter(&$items) {
-  // Disable user registration page to suppress direct registration.
-  $items['user/register']['page callback'] = 'openid_sso_register_page';
-  // Override the user page callback to replace it with our own login form.
-  $items['user']['page callback'] = 'openid_sso_user_page';
-}
-
-/**
- * Custom callback for user/register/
- */
-function openid_sso_register_page() {
-  $provider = variable_get('openid_sso_provider', '');
-  drupal_goto($provider['url'], 'q=user/register&relying_party='. variable_get('site_name', 'Drupal'));
-}
-
-/**
- * Custom menu callback for user/ page.
- */
-function openid_sso_user_page() {
-
-  // If user is logged in, just pass on to original user page.
+function openid_sso_login_access() {
   global $user;
-  if ($user->uid) {
-    return user_page();
+  if (empty($user->uid)) {
+    return TRUE;
   }
-
-  // If there is no user logged in, present a simplified login form.
-  return drupal_get_form('openid_sso_login_form');
+  return FALSE;
 }
 
 /**
@@ -72,6 +63,7 @@ function openid_sso_login_form() {
   $form['openid_identifier'] = array(
     '#type' => 'textfield',
     '#title'=> t('Your !provider user name', array('!provider' => $provider['name'])),
+    '#description' => l(t('New? Get !provider account', array('!provider' => $provider['name'])), $provider['url'], array('query' => 'q=user/register&relying_party='. variable_get('site_name', 'Drupal'))),
     '#default_value' => check_plain(urldecode($_GET['identifier'])),
     '#maxlength' => 255,
     // Use prefix/suffix instead of #attributes as we'd like to hide the label, too.
