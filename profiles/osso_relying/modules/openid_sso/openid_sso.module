@@ -6,19 +6,6 @@
  */
 
 /**
- * Implementation of hook_menu().
- */
-function openid_sso_menu() {
-  $items = array();
-  $items['sso'] = array(
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('openid_sso_login_form'),
-    'access callback' => 'openid_sso_login_access',
-  );
-  return $items;
-}
-
-/**
  * Implementation of hook_strongarm().
  */
 function openid_sso_strongarm() {
@@ -32,24 +19,30 @@ function openid_sso_strongarm() {
 }
 
 /**
- * Access callback for login page.
+ * Implementation of hook_menu_alter().
  */
-function openid_sso_login_access() {
-  global $user;
-  if (empty($user->uid)) {
-    return TRUE;
-  }
-  return FALSE;
+function openid_sso_menu_alter(&$items) {
+  // Disable user registration page to suppress direct registration.
+  $items['user/register']['page callback'] = 'openid_sso_register_page';
+  // Override the user page callback to replace it with our own login form.
+  $items['user']['page callback'] = 'openid_sso_user_page';
+}
+
+/**
+ * Custom callback for user/register/
+ */
+function openid_sso_register_page() {
+  $provider = variable_get('openid_sso_provider', '');
+  drupal_goto($provider['url'], _openid_sso_provider_query());
 }
 
 /**
  * Simplified login form.
  *
- * Compare to openid_form_alter().
+ * Offer simple text field for user name. On submit, tack user name to the end
+ * of OpenID Provider URL and redirect to begin athentication handshake.
  *
- * @todo: Smoothen out user name retrieval, will require adjustments to
- * provider.
- * '#description' => l(t('Forgot your user name?'), trim(variable_get('openid_sso_provider', ''), '/') .'/user/password'),
+ * Compare to openid_form_alter().
  */
 function openid_sso_login_form() {
   $provider = variable_get('openid_sso_provider', 'SSO Web');
@@ -63,7 +56,7 @@ function openid_sso_login_form() {
   $form['openid_identifier'] = array(
     '#type' => 'textfield',
     '#title'=> t('Your !provider user name', array('!provider' => $provider['name'])),
-    '#description' => l(t('New? Get !provider account', array('!provider' => $provider['name'])), $provider['url'], array('query' => 'q=user/register&relying_party='. variable_get('site_name', 'Drupal'))),
+    '#description' => l(t('New? Get an account on !provider', array('!provider' => $provider['name'])), $provider['url'], array('query' => _openid_sso_provider_query())),
     '#default_value' => check_plain(urldecode($_GET['identifier'])),
     '#maxlength' => 255,
     // Use prefix/suffix instead of #attributes as we'd like to hide the label, too.
@@ -91,4 +84,13 @@ function openid_sso_login_form_validate($form, &$form_state) {
   }
   $provider = variable_get('openid_sso_provider', '');
   openid_begin($provider['url'] .'/openid/'. urlencode($form_state['values']['openid_identifier']), $return_to, $form_state['values']);
+}
+
+/**
+ * Helper function, define HTTP query to pass on to the provider when requesting
+ * a registration.
+ */
+function _openid_sso_provider_query() {
+  $relying_party = urlencode(url('', array('absolute' => TRUE)));
+  return "q=user/register&relying_party=$relying_party&redirect=user";
 }

@@ -1,0 +1,31 @@
+<?php
+
+/**
+ * Implementation hook_menu_alter().
+ */
+function osso_relying_menu_alter(&$items) {
+  foreach (array('user', 'logout') as $path) {
+    $items[$path]['menu_name'] = 'primary-links';
+    $items[$path]['type'] = MENU_NORMAL_ITEM;
+  }
+  $items['user']['title callback'] = 'osso_relying_user_menu_title';
+  $items['user/register']['title callback'] = 'osso_relying_register_menu_title';
+}
+
+/**
+ * Custom title callback.
+ */
+function osso_relying_user_menu_title() {
+  global $user;
+  if ($user->uid) {
+    return t('Hello @user', array('@user' => $user->name));
+  }
+  return t('Log in / Sign up');
+}
+
+/**
+ * Custom title callback.
+ */
+function osso_relying_register_menu_title() {
+  return t('Sign up');
+}
