@@ -61,6 +61,7 @@ function openid_sso_login_form() {
   $form['openid_identifier'] = array(
     '#type' => 'textfield',
     '#title'=> t('Your !provider user name', array('!provider' => $provider['name'])),
+    '#default_value' => check_plain($_GET['identifier']),
     '#maxlength' => 255,
   );
   $form['#validate'] = array('openid_sso_login_form_validate');
