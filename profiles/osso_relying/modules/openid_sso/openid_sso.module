@@ -72,6 +72,7 @@ function openid_sso_login_form() {
   $form['openid_identifier'] = array(
     '#type' => 'textfield',
     '#title'=> t('Your !provider user name', array('!provider' => $provider['name'])),
+    '#description' => l(t('New? Get an account on !provider', array('!provider' => $provider['name'])), $provider['url'], array('query' => 'q=user/register&relying_party='. variable_get('site_name', 'Drupal'))),
     '#default_value' => check_plain(urldecode($_GET['identifier'])),
     '#maxlength' => 255,
     // Use prefix/suffix instead of #attributes as we'd like to hide the label, too.
