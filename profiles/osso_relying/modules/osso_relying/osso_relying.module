@@ -20,7 +20,8 @@ function osso_relying_user_menu_title() {
   if ($user->uid) {
     return t('Hello @user', array('@user' => $user->name));
   }
-  return t('Log in / Sign up');
+  $provider = variable_get('openid_sso_provider', array());
+  return t('Log in with your !provider ID', array('!provider' => $provider['name']));
 }
 
 /**
