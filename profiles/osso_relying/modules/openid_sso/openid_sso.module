@@ -72,7 +72,7 @@ function openid_sso_login_form($identifier) {
   $form = array();
   $form['#attributes'] = array('class' => 'auto-submit');
   $form['message']['#value'] = '<h3>'. t('Hello @name &ndash; you are being logged in automatically', array('@name' => $_GET['identifier'])) .'</h3>';
-  $form['message']['#value'] .= '<p>'. t('If page does not redirect within 3 seconds, click "Log in" button below.') .'</p>';
+  $form['message']['#value'] .= '<p>'. t('If page does not redirect within 10 seconds, click "Log in" button below.') .'</p>';
 
   $form['openid_identifier'] = array(
     '#type' => 'textfield',
