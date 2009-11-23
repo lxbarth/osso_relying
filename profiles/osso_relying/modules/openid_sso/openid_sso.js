@@ -3,6 +3,6 @@
  * Javascript behaviors for OpenID SSO.
  */
 
-Drupal.behaviors.feeds = function() {
+Drupal.behaviors.openid_sso = function() {
   $('.auto-submit').submit();
 }
