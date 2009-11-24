@@ -67,12 +67,13 @@ function openid_sso_request_redirect() {
  */
 function openid_sso_login_form($identifier) {
   drupal_add_js(drupal_get_path('module', 'openid_sso') .'/openid_sso.js');
+  drupal_set_title(t('Logging in @user', array('@user' => $_GET['identifier'])));
   $provider = variable_get('openid_sso_provider', 'SSO Web');
 
   $form = array();
   $form['#attributes'] = array('class' => 'auto-submit');
-  $form['message']['#value'] = '<h3>'. t('Hello @name &ndash; you are being logged in automatically', array('@name' => $_GET['identifier'])) .'</h3>';
-  $form['message']['#value'] .= '<p>'. t('If page does not redirect within 10 seconds, click "Log in" button below.') .'</p>';
+  $form['progress']['#value'] .= theme_image(drupal_get_path('module', 'openid_sso') .'/loading_animation.gif');
+  $form['message']['#value'] .= '<p>'. t('If page does not reload within 30 seconds, click "Log in" below.') .'</p>';
 
   $form['openid_identifier'] = array(
     '#type' => 'textfield',
