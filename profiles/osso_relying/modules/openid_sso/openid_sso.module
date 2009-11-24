@@ -83,12 +83,7 @@ function openid_sso_login_form($identifier) {
     '#suffix' => '</div>',
   );
   $form['#validate'] = array('openid_sso_login_form_validate');
-  // Removed 'query' => drupal_get_destination(). When user cancels OpenID
-  // log in on OP, OP would redirect here, we would auto submit (see JS) and
-  // the user would land on the same OP were she left from. An endless loop.
-  // Replacing drupal_get_destination() with a different query (say, 'user')
-  // fails (not sure why).
-  $form['openid.return_to'] = array('#type' => 'hidden', '#value' => url('openid/authenticate', array('absolute' => TRUE)));
+  $form['openid.return_to'] = array('#type' => 'hidden', '#value' => url('openid/authenticate', array('absolute' => TRUE, 'query' => drupal_get_destination())));
   $form['submit'] = array(
     '#type' => 'submit',
     '#value' => t('Log in'),
