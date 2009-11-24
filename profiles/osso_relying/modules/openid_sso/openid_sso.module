@@ -67,13 +67,20 @@ function openid_sso_request_redirect() {
  */
 function openid_sso_login_form($identifier) {
   drupal_add_js(drupal_get_path('module', 'openid_sso') .'/openid_sso.js');
-  drupal_set_title(t('Logging in @user', array('@user' => $_GET['identifier'])));
+  drupal_set_title(check_plain( $_GET['identifier']));
   $provider = variable_get('openid_sso_provider', 'SSO Web');
 
   $form = array();
   $form['#attributes'] = array('class' => 'auto-submit');
-  $form['progress']['#value'] .= theme_image(drupal_get_path('module', 'openid_sso') .'/loading_animation.gif');
-  $form['message']['#value'] .= '<p>'. t('If page does not reload within 30 seconds, click "Log in" below.') .'</p>';
+
+  $form['welcome']['#value'] = '<div class="script" style="display:none">';
+  $form['welcome']['#value'] .= theme('image', drupal_get_path('module', 'openid_sso') .'/loading_animation.gif');
+  $form['welcome']['#value'] .= '<p>'. t('Please wait while being logged in.') .'</p>';
+  $form['welcome']['#value'] .= '</div>';
+
+  $form['welcome']['#value'] .= '<div class="noscript">';
+  $form['welcome']['#value'] .= '<p>'. t('Welcome to !site. Click "Log in" to enter.', array('!site' => variable_get('site_name', 'Drupal'))) .'</p>';
+  $form['welcome']['#value'] .= '</div>';
 
   $form['openid_identifier'] = array(
     '#type' => 'textfield',
