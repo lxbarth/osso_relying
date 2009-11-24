@@ -23,7 +23,7 @@ function openid_sso_strongarm() {
  */
 function openid_sso_menu_alter(&$items) {
   // Disable user registration page to suppress direct registration.
-  $items['user/register']['page callback'] = 'openid_sso_register_redirect';
+  $items['user/register']['page callback'] = 'openid_sso_request_redirect';
   // Override the user page callback to replace it with our own login form.
   $items['user']['page callback'] = 'openid_sso_user_page';
 }
@@ -45,16 +45,16 @@ function openid_sso_user_page() {
   }
 
   // Otherwise redirect to trusted OpenID Provider.
-  openid_sso_register_redirect();
+  openid_sso_request_redirect();
 }
 
 /**
- * Redirect to registration page on provider.
+ * Start an SSO request by redirecting the user to the provider.
  */
-function openid_sso_register_redirect() {
+function openid_sso_request_redirect() {
   $provider = variable_get('openid_sso_provider', array());
   $realm = urlencode(url('', array('absolute' => TRUE)));
-  drupal_goto($provider['url'], "q=user&realm=$realm");
+  drupal_goto($provider['url'], "q=sso-request&realm=$realm");
 }
 
 /**
