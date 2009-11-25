@@ -56,9 +56,22 @@ function openid_sso_user_page() {
     return user_page();
   }
 
-  // If there is an identifier passed in in GET request, present login form.
+  // If there is an identifier passed in in GET request, issue an OpenID
+  // authentication request.
+  //
+  // Compare to openid_form_alter().
+  //
+  // @todo: this opens a vulnerability to DOS attacks causing repeated
+  // authentication requests triggered by an attacker issuing GET requests with
+  // an identifier against this URL.
+  //
   if ($_GET['identifier']) {
-    return drupal_get_form('openid_sso_login_form', $_GET['identifier']);
+    $provider = variable_get('openid_sso_provider', '');
+    $values = array(
+      'openid_identifier' => $provider['url'] .'openid/'. urlencode($_GET['identifier']),
+      'openid.return_to' => url('openid/authenticate', array('absolute' => TRUE, 'query' => drupal_get_destination())),
+    );
+    openid_begin($values['openid_identifier'], $values['openid.return_to'], $values);
   }
 
   // Otherwise redirect to trusted OpenID Provider.
@@ -72,60 +85,4 @@ function openid_sso_request_redirect() {
   $provider = variable_get('openid_sso_provider', array());
   $realm = urlencode(url('', array('absolute' => TRUE)));
   drupal_goto($provider['url'], "q=sso-request&realm=$realm");
-}
-
-/**
- * Simplified login form.
- *
- * Offer simple text field for user name. On submit, tack user name to the end
- * of OpenID Provider URL and redirect to begin athentication handshake.
- *
- * Compare to openid_form_alter().
- */
-function openid_sso_login_form($identifier) {
-  drupal_add_js(drupal_get_path('module', 'openid_sso') .'/openid_sso.js');
-  drupal_set_title(check_plain( $_GET['identifier']));
-  $provider = variable_get('openid_sso_provider', 'SSO Web');
-
-  $form = array();
-  $form['#attributes'] = array('class' => 'auto-submit');
-
-  $form['welcome']['#value'] = '<div class="script" style="display:none">';
-  $form['welcome']['#value'] .= theme('image', drupal_get_path('module', 'openid_sso') .'/loading_animation.gif');
-  $form['welcome']['#value'] .= '<p>'. t('Please wait while being logged in.') .'</p>';
-  $form['welcome']['#value'] .= '</div>';
-
-  $form['welcome']['#value'] .= '<div class="noscript">';
-  $form['welcome']['#value'] .= '<p>'. t('Welcome to !site. Click "Log in" to enter.', array('!site' => variable_get('site_name', 'Drupal'))) .'</p>';
-  $form['welcome']['#value'] .= '</div>';
-
-  $form['openid_identifier'] = array(
-    '#type' => 'textfield',
-    '#default_value' => check_plain(urldecode($_GET['identifier'])),
-    '#maxlength' => 255,
-    // Use prefix/suffix instead of #attributes as we'd like to hide the label, too.
-    '#prefix' => '<div style="display:none">',
-    '#suffix' => '</div>',
-  );
-  $form['#validate'] = array('openid_sso_login_form_validate');
-  $form['openid.return_to'] = array('#type' => 'hidden', '#value' => url('openid/authenticate', array('absolute' => TRUE, 'query' => drupal_get_destination())));
-  $form['submit'] = array(
-    '#type' => 'submit',
-    '#value' => t('Log in'),
-  );
-  return $form;
-}
-
-/**
- * Submit hook for openid_sso_login_form().
- *
- * Compare to openid_login_validate().
- */
-function openid_sso_login_form_validate($form, &$form_state) {
-  $return_to = $form_state['values']['openid.return_to'];
-  if (empty($return_to)) {
-    $return_to = url('', array('absolute' => TRUE));
-  }
-  $provider = variable_get('openid_sso_provider', '');
-  openid_begin($provider['url'] .'/openid/'. urlencode($form_state['values']['openid_identifier']), $return_to, $form_state['values']);
 }
