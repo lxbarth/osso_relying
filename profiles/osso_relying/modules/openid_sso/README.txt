@@ -32,7 +32,7 @@ In your site's settings.php file, define a trusted OpenID Provider. OpenID
 Provider must have OpenID Provider SSO enabled.
 
 $conf['openid_sso_provider'] = array(
-  'url' => 'http://localhost/op', // No trailing slashes.
+  'url' => 'http://localhost/op/', // Must have trailing slashes
   'name' => 'SSO Web', // Mostly always the Provider's site name.
 );
 
