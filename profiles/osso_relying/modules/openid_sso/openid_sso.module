@@ -19,6 +19,23 @@ function openid_sso_strongarm() {
 }
 
 /**
+ * Implementation of hook_menu().
+ */
+function openid_sso_menu() {
+  $items = array();
+  // Move log in page to login/direct. See how openid_sso_menu_alter() replaces
+  // log in.
+  $items['login/direct'] = array(
+    'title' => 'Direct log in',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('user_login'),
+    'access callback' => 'user_is_anonymous',
+    'type' => MENU_CALLBACK,
+  );
+  return $items;
+}
+
+/**
  * Implementation of hook_menu_alter().
  */
 function openid_sso_menu_alter(&$items) {
