@@ -1,0 +1,16 @@
+<?php
+
+include_once('simple_blog.features.inc');
+
+/**
+ * Implementation hook_menu_alter().
+ */
+function simple_blog_menu_alter(&$items) {
+  $items['node/add/story']['menu_name'] = 'features';
+  $items['node/add/story']['type'] = MENU_NORMAL_ITEM;
+  // This is necessary to keep menu system from finding a parent and assigning.
+  // this item back to its parent.
+  $items['node/add/story']['plid'] = 0;
+  $items['node/add/story']['title'] = t('Post story');
+  $items['node/add/story']['weight'] = -10;
+}
