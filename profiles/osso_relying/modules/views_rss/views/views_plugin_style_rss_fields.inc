@@ -1,5 +1,5 @@
 <?php
-// $Id: views_plugin_style_rss_fields.inc,v 1.1 2009/09/22 16:49:55 rsoden Exp $ 
+// $Id: views_plugin_style_rss_fields.inc,v 1.1 2009/09/22 16:49:55 rsoden Exp $
 
 /**
  * @file
@@ -7,7 +7,7 @@
  */
 
 class views_plugin_style_rss_fields extends views_plugin_style {
-  
+
     /**
      * Initialize plugin.
      *
@@ -17,7 +17,7 @@ class views_plugin_style_rss_fields extends views_plugin_style {
       parent::init($view, $display, $options = NULL);
       $this->feed_image = drupal_get_path('module', 'views_kml') . '/images/kml.png';
     }
-    
+
     /**
      * Attach this view to another display as a feed.
      *
@@ -29,17 +29,17 @@ class views_plugin_style_rss_fields extends views_plugin_style {
       $image = theme('image', $this->feed_image);
       $this->view->feed_icon .= l($image, $path, $url_options);
     }
-    
+
     /**
      * Provide a form for setting options.
      *
      * @param array $form
      * @param array $form_state
      */
-    function options_form(&$form, &$form_state) { 
-      parent::options_form($form, $form_state);                  
+    function options_form(&$form, &$form_state) {
+      parent::options_form($form, $form_state);
       $options = parent::option_definition();
-                             
+
       $handlers = $this->display->handler->get_handlers('field');
       if (empty($handlers)) {
         $form['error_markup'] = array(
@@ -52,7 +52,7 @@ class views_plugin_style_rss_fields extends views_plugin_style {
         // Feed Description
         $form['description'] = array(
           '#type' => 'fieldset',
-          '#title' => t('Feed Description'), 
+          '#title' => t('Feed Description'),
           '#collapsible' => TRUE,
           '#collapsed' => TRUE,
           '#weight' => -5,
@@ -73,26 +73,52 @@ class views_plugin_style_rss_fields extends views_plugin_style {
           }
         }
         $field_options = array(
-          'title' => t('Title'),
-          'description' => t('Description'),
-          'link' => t('Link'),
-          'author' => t('Author'),
-          'category' => t('category'),
-          'guid' => t('guid'),
-          'pubDate' => t('pubDate'),
+          'title' => array(
+            'title' => t('Title'),
+            'description' => t('RSS 2.0 title element'),
+          ),
+          'description' => array(
+            'title' => t('Description'),
+            'description' => t('RSS 2.0 description element'),
+          ),
+          'link' => array(
+            'title' => t('Link'),
+            'description' => t('RSS 2.0 link element'),
+          ),
+          'author' => array(
+            'title' => t('Author e-mail'),
+            'description' => t('RSS 2.0 author element'),
+          ),
+          'author_name' => array(
+            'title' => t('Author name'),
+            'description' => t('Dublin core creator element'),
+          ),
+          'category' => array(
+            'title' => t('category'),
+            'description' => t('RSS 2.0 category element'),
+          ),
+          'guid' => array(
+            'title' => t('guid'),
+            'description' => t('RSS 2.0 guid element'),
+          ),
+          'pubDate' => array(
+            'title' => t('pubDate'),
+            'description' => t('RSS 2.0 pubDate element'),
+          ),
         );
         $form['fields'] = array(
           '#type' => 'fieldset',
           '#title' => 'Field usage',
-          '#description' => t('Select the fields that relevant data for each element of the feed'),
+          '#description' => t('Each RSS 2.0 item is composed of various of elements. Select here which fields should be used to populate these elements.'),
           '#collapsible' => TRUE,
           '#collapsed' => TRUE,
           '#weight' => 0,
         );
-        foreach ($field_options as $k => $v) {
+        foreach ($field_options as $k => $option) {
           $form['fields'][$k] = array(
             '#type' => 'select',
-            '#title' => $v,
+            '#title' => $option['title'],
+            '#description' => isset($option['description']) ? $option['description'] : '',
             '#options' => $field_names,
             '#default_value' => $this->options['fields'][$k],
           );
@@ -100,7 +126,7 @@ class views_plugin_style_rss_fields extends views_plugin_style {
         // GeoRSS
         $form['georss'] = array(
           '#type' => 'fieldset',
-          '#title' => t('GeoRSS'), 
+          '#title' => t('GeoRSS'),
           '#collapsible' => TRUE,
           '#collapsed' => TRUE,
           '#weight' => 5,
@@ -113,7 +139,7 @@ class views_plugin_style_rss_fields extends views_plugin_style {
           '#title' => t('Latitude'),
           '#options' => $field_names,
           '#default_value' => $this->options['georss']['lat'],
-        ); 
+        );
         $form['georss']['lon'] = array(
           '#type' => 'select',
           '#title' => t('Longitude'),
@@ -122,7 +148,7 @@ class views_plugin_style_rss_fields extends views_plugin_style {
         );
       }
     }
-    
+
     function map_rows($rows) {
       // Fields must be rendered in order as of Views 2.3, so we will pre-render everything.
       $renders = array();
@@ -132,8 +158,8 @@ class views_plugin_style_rss_fields extends views_plugin_style {
         foreach ($keys as $id) {
           $renders[$count][$id] = $this->view->field[$id]->theme($row);
         }
-      }  
-      
+      }
+
       // @TODO: The following seems ridiculous and should probably be improved.
       $items = array();
       foreach ($renders as $id => $row) {
@@ -150,6 +176,9 @@ class views_plugin_style_rss_fields extends views_plugin_style {
           }
           elseif ($key == $this->options['fields']['author']) {
             $item['author'] = $row[$key];
+          }
+          elseif ($key == $this->options['fields']['author_name']) {
+            $item['author_name'] = $row[$key];
           }
           elseif ($key == $this->options['fields']['category']) {
             $item['category'] = $row[$key];

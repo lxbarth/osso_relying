@@ -3,7 +3,10 @@
 
 function template_preprocess_views_view_views_rss_fields(&$vars) {
   $view = $vars['view'];
-      
+
+  // Initialize namespaces array.
+  $vars['ns'] = array();
+
   // Set basic info - title, description - about the feed
   $vars['viewtitle'] = variable_get('site_name', array()) . ' | ' . $view->display[$view->current_display]->display_title;
     
@@ -25,11 +28,17 @@ function template_preprocess_views_view_views_rss_fields(&$vars) {
     $rows .= theme('views_rss_fields_item', $item);
   }
   $vars['rows'] = $rows;
-  
-  //GeoRSS
+
+  // Render namespace definitions.
+  $namespaces = array();
   if ($view->style_options['georss']['lat'] && $view->style_options['georss']['lon']) {
-   $vars['georss'] = TRUE;
+    $namespaces[] = 'xmlns:georss="http://www.georss.org/georss"';
   }
+  if ($view->style_options['fields']['author_name']) {
+    $namespaces[] = 'xmlns:dc="http://purl.org/dc/elements/1.1/"';
+  }
+  // error_log(print_r($view->style_options, true));
+  $vars['namespaces'] = implode(' ', $namespaces);
 }
 
 /**
@@ -43,6 +52,12 @@ function template_preprocess_views_rss_fields_item(&$vars) {
     $item['georss:point'] = check_plain($item['lat'] . ' ' .  $item['lon']);
     unset($item['lat']);
     unset($item['lon']);
+  }
+  
+  // dc:creator
+  if ($item['author_name']) {
+    $item['dc:creator'] = check_plain($item['author_name']);
+    unset($item['author_name']);
   }
   
   // Loop through key=>value pairs
