@@ -423,6 +423,7 @@ function _simple_blog_views_default_views() {
   $handler->override_option('cache', array(
     'type' => 'none',
   ));
+  $handler->override_option('title', 'Posts by users');
   $handler->override_option('row_plugin', 'node');
   $handler->override_option('row_options', array(
     'relationship' => 'none',
@@ -456,7 +457,7 @@ function _simple_blog_views_default_views() {
     'weight' => 0,
   ));
   $handler->override_option('displays', array());
-  $handler->override_option('sitename_title', FALSE);
+  $handler->override_option('sitename_title', 0);
 
   $views[$view->name] = $view;
 
