@@ -441,7 +441,7 @@ function _simple_blog_views_default_views() {
   $handler->override_option('row_plugin', 'node_rss');
   $handler->override_option('row_options', array(
     'relationship' => 'none',
-    'item_length' => 'default',
+    'item_length' => 'title',
   ));
   $handler->override_option('path', 'activity/posts');
   $handler->override_option('menu', array(
