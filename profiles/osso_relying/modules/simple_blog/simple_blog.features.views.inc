@@ -101,7 +101,7 @@ function _simple_blog_views_default_views() {
       'label' => '',
       'alter' => array(
         'alter_text' => 1,
-        'text' => 'On [title]',
+        'text' => 'on [title]',
         'make_link' => 0,
         'path' => '',
         'link_class' => '',
