@@ -28,11 +28,13 @@ function osso_relying_menu_alter(&$items) {
  */
 function osso_relying_user_view($account) {
   $provider = variable_get('openid_sso_provider', '');
-  if ($provider['url'] && !empty($account->name)) {
+  // Do not redirect to provider if identifier is set - in that case we just
+  // came back from the provider.
+  if ($provider['url'] && !empty($account->name) && !isset($_GET['identifier'])) {
     drupal_goto($provider['url'], 'q=user/'. urlencode($account->name));
   }
   else {
-    return user_view($account);
+    drupal_goto('');
   }
 }
 
