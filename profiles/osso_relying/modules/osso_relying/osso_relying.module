@@ -1,6 +1,15 @@
 <?php
 
 /**
+ * Implementation of hook_strongarm().
+ */
+function osso_relying_strongarm() {
+  return array (
+    'menu_primary_links_source' => 'features',
+  );
+}
+
+/**
  * Implementation hook_menu_alter().
  */
 function osso_relying_menu_alter(&$items) {

@@ -19,6 +19,11 @@ function osso_relying_profile_modules() {
     'openid_sso',
     'osso_relying',
     'strongarm',
+    'features',
+    'views',
+    'views_ui',
+    'views_rss',
+    'simple_blog',
   );
 }
 
