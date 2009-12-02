@@ -85,9 +85,12 @@ function openid_sso_user_page() {
     );
     openid_begin($values['openid_identifier'], $values['openid.return_to'], $values);
   }
+  else {
+    // Otherwise redirect to trusted OpenID Provider.
+    openid_sso_request_redirect();
+  }
 
-  // Otherwise redirect to trusted OpenID Provider.
-  openid_sso_request_redirect();
+  return '';
 }
 
 /**
