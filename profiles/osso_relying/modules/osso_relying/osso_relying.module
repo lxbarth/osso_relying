@@ -63,15 +63,26 @@ function osso_relying_register_menu_title() {
 function osso_hub_bar() {
   global $user;
 
+  $provider = variable_get('openid_sso_provider', array());
+
+  // @todo: needs caching.
+  $result = drupal_http_request($provider['url'] .'sso/trusted-sites');
+  if ($result->code == 200) {
+    $data = osso_relying_parse_opml($result->data);
+  }
+  else {
+    drupal_set_message($result->error, 'error');
+  }
+
   // Generate links to hub and other relying parties.
   $items = array();
   $items[] = array(
-    'data' => l(check_plain(variable_get('site_name', 'Drupal')), ''),
+    'data' => l(check_plain($provider['name']), $provider['url']),
     'class' => 'provider',
   );
-  foreach (variable_get('openid_provider_sso_rps', array()) as $rp) {
+  foreach ($data['items'] as $rp) {
     $items[] = array(
-      'data' => l(check_plain($rp['name']), $rp['realm']),
+      'data' => l(check_plain($rp['title']), $rp['htmlurl']),
       'class' => 'relying',
     );
   }
@@ -98,4 +109,45 @@ function osso_hub_bar() {
   $output .= theme('item_list', $items, NULL, 'ul', array('class' => 'links user-links'));
 
   return $output;
+}
+
+/**
+ * Parse OPML file.
+ *
+ * @param $raw
+ *   File contents.
+ * @return
+ *   An array of the parsed OPML file.
+ */
+function osso_relying_parse_opml($raw) {
+  $feeds = $items = array();
+  $xml = new SimpleXMLElement($raw);
+
+  $feeds['title'] = (string)current($xml->xpath('//head/title'));
+
+  // @todo: Make xpath case insensitive.
+  $outlines = $xml->xpath('//outline[@htmlUrl]');
+  foreach ($outlines as $outline) {
+    $item = array();
+    foreach ($outline->attributes() as $k => $v) {
+      if (in_array(strtolower($k), array('title', 'text', 'htmlurl'))) {
+        $item[strtolower($k)] = (string) $v;
+      }
+    }
+
+    // If no title, forge it from text.
+    if (!isset($item['title']) && isset($item['text'])) {
+      if (strlen($item['text']) < 40) {
+        $item['title'] = $item['text'];
+      }
+      else {
+        $item['title'] = trim(substr($item['text'], 0, 30)) .' ...';
+      }
+    }
+    if (isset($item['title']) && isset($item['htmlurl'])) {
+      $items[] = $item;
+    }
+  }
+  $feeds['items'] = $items;
+  return $feeds;
 }
