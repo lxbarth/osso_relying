@@ -13,11 +13,6 @@ function osso_relying_strongarm() {
  * Implementation hook_menu_alter().
  */
 function osso_relying_menu_alter(&$items) {
-
-  foreach (array('user', 'logout', 'node/add/story') as $path) {
-    $items[$path]['menu_name'] = 'features';
-    $items[$path]['type'] = MENU_NORMAL_ITEM;
-  }
   $items['user/%user_uid_optional']['page callback'] = 'osso_relying_user_view';
   $items['user']['title callback'] = 'osso_relying_user_menu_title';
   $items['user/register']['title callback'] = 'osso_relying_register_menu_title';
