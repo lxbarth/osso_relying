@@ -37,6 +37,9 @@ function openid_sso_menu() {
 
 /**
  * Implementation of hook_form_alter().
+ *
+ * Redirect user to front page after login, otherwise she will be pushed to OP
+ * when using the login/direct form.
  */
 function openid_sso_form_alter(&$form, $form_state, $form_id) {
   if ($form_id == 'user_login') {
