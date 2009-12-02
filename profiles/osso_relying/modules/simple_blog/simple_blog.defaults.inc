@@ -15,6 +15,15 @@ function _simple_blog_user_default_permissions() {
     ),
   );
 
+  // Exported permission: access user profiles
+  $permissions[] = array(
+    'name' => 'access user profiles',
+    'roles' => array(
+      '0' => 'anonymous user',
+      '1' => 'authenticated user',
+    ),
+  );
+
   // Exported permission: create story content
   $permissions[] = array(
     'name' => 'create story content',
