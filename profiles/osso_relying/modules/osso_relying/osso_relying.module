@@ -26,7 +26,7 @@ function osso_relying_user_view($account) {
   // Do not redirect to provider if identifier is set - in that case we just
   // came back from the provider.
   if ($provider['url'] && !empty($account->name) && !isset($_GET['identifier'])) {
-    drupal_goto($provider['url'], 'q=user/'. urlencode($account->name));
+    drupal_goto($provider['url'] .'user/'. urlencode($account->name));
   }
   else {
     drupal_goto('');
