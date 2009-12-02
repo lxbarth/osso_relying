@@ -96,5 +96,5 @@ function openid_sso_user_page() {
 function openid_sso_request_redirect() {
   $provider = variable_get('openid_sso_provider', array());
   $realm = urlencode(url('', array('absolute' => TRUE)));
-  drupal_goto($provider['url'], "q=sso-request&realm=$realm");
+  drupal_goto($provider['url'], "q=sso/request&realm=$realm");
 }
