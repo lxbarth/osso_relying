@@ -166,25 +166,9 @@ function osso_relying_profile_tasks(&$task, $url) {
     // blowing away our changes.
     _osso_relying_system_theme_data();
     db_query("UPDATE {system} SET status = 0 WHERE type = 'theme'");
-    db_query("UPDATE {system} SET status = 1 WHERE type = 'theme' AND name = 'singular'");
-    db_query("UPDATE {blocks} SET region = '' WHERE theme = 'singular'");
-    variable_set('theme_default', 'singular');
-    // Set book background on singular.
-    variable_set('theme_singular_settings', array(
-      'layout' => 'fixed',
-      'autoclose' =>
-        array(
-          'status' => 'status',
-          'warning' => 0,
-          'error' => 0,
-        ),
-        'style' => 'book',
-        'background_file' => '',
-        'background_path' => '',
-        'background_color' => '#888888',
-        'background_repeat' => 'no-repeat',
-      )
-    );
+    db_query("UPDATE {system} SET status = 1 WHERE type = 'theme' AND name = 'hubnet'");
+    db_query("UPDATE {blocks} SET region = '' WHERE theme = 'hubnet'");
+    variable_set('theme_default', 'hubnet');
 
     $task = 'finished';
   }
