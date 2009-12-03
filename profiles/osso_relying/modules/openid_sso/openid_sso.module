@@ -52,7 +52,7 @@ function openid_sso_form_alter(&$form, $form_state, $form_id) {
  */
 function openid_sso_menu_alter(&$items) {
   // Disable user registration page to suppress direct registration.
-  $items['user/register']['page callback'] = 'openid_sso_request_redirect';
+  $items['user/register']['page callback'] = 'openid_sso_user_register_page';
   // Override the user page callback to replace it with our own login form.
   $items['user']['page callback'] = 'openid_sso_user_page';
 }
@@ -91,6 +91,17 @@ function openid_sso_user_page() {
   }
 
   return '';
+}
+
+/**
+ * Custom callback for user/register.
+ */
+function openid_sso_user_register_page() {
+  $items = array();
+  $provider = variable_get('openid_sso_provider', array());
+  $items[] = t('Log in via !provider', array('!provider' => l(check_plain($provider['name']), 'user')));
+  $items[] = t('If an OpenID error has occurred, try a new user name.');
+  return theme('item_list', $items);
 }
 
 /**
