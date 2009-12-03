@@ -95,6 +95,10 @@ function openid_sso_user_page() {
 
 /**
  * Custom callback for user/register.
+ *
+ * It is important to not automatically redirect to hub here. Otherwise an
+ * infinite loop could occur when a user tries to authenticate with a username
+ * that already exists.
  */
 function openid_sso_user_register_page() {
   $items = array();
