@@ -51,68 +51,43 @@ function openid_sso_form_alter(&$form, $form_state, $form_id) {
  * Implementation of hook_menu_alter().
  */
 function openid_sso_menu_alter(&$items) {
-  // Disable user registration page to suppress direct registration.
-  $items['user/register']['page callback'] = 'openid_sso_user_register_page';
-  // Override the user page callback to replace it with our own login form.
+  $items['user/register']['page callback'] = 'openid_sso_user_page';
   $items['user']['page callback'] = 'openid_sso_user_page';
 }
 
 /**
- * Custom menu callback for user/ page.
+ * Simple sign in / sign up form triggering authentication with OP.
+ */
+function openid_sso_form() {
+  $form = array();
+  $provider = variable_get('openid_sso_provider', '');
+  $form['help']['#value'] = '<div class="help">'. t('Log in / sign up via !provider.', array('!provider' => $provider['name'])) .'</div>';
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Log in / sign up'),
+  );
+  return $form;
+}
+
+/**
+ * Submit handler for openid_sso_form().
+ */
+function openid_sso_form_submit($form, &$form_state) {
+  $provider = variable_get('openid_sso_provider', '');
+  $values = array(
+    'openid_identifier' => $provider['url'],
+    'openid.return_to' => url('openid/authenticate', array('absolute' => TRUE, 'query' => 'destination=')),
+  );
+  openid_begin($values['openid_identifier'], $values['openid.return_to'], $values);
+}
+
+/**
+ * Custom menu callback for user/page.
  */
 function openid_sso_user_page() {
-
-  // If user is logged in, just pass on to original user page.
   global $user;
   if ($user->uid) {
     return user_page();
   }
-
-  // If there is an identifier passed in in GET request, issue an OpenID
-  // authentication request.
-  //
-  // Compare to openid_form_alter().
-  //
-  // @todo: this opens a vulnerability to DOS attacks causing repeated
-  // authentication requests triggered by an attacker issuing GET requests with
-  // an identifier against this URL.
-  //
-  if ($_GET['identifier']) {
-    $provider = variable_get('openid_sso_provider', '');
-    $values = array(
-      'openid_identifier' => $provider['url'] .'openid/'. urlencode($_GET['identifier']),
-      'openid.return_to' => url('openid/authenticate', array('absolute' => TRUE, 'query' => drupal_get_destination())),
-    );
-    openid_begin($values['openid_identifier'], $values['openid.return_to'], $values);
-  }
-  else {
-    // Otherwise redirect to trusted OpenID Provider.
-    openid_sso_request_redirect();
-  }
-
-  return '';
-}
-
-/**
- * Custom callback for user/register.
- *
- * It is important to not automatically redirect to hub here. Otherwise an
- * infinite loop could occur when a user tries to authenticate with a username
- * that already exists.
- */
-function openid_sso_user_register_page() {
-  $items = array();
-  $provider = variable_get('openid_sso_provider', array());
-  $items[] = t('Log in via !provider', array('!provider' => l(check_plain($provider['name']), 'user')));
-  $items[] = t('If an OpenID error has occurred, try a new user name.');
-  return theme('item_list', $items);
-}
-
-/**
- * Start an SSO request by redirecting the user to the provider.
- */
-function openid_sso_request_redirect() {
-  $provider = variable_get('openid_sso_provider', array());
-  $realm = urlencode(url('', array('absolute' => TRUE)));
-  drupal_goto($provider['url'], "q=sso/request&realm=$realm");
+  return drupal_get_form('openid_sso_form');
 }
